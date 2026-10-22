@@ -1,11 +1,12 @@
 import csv
+from datetime import date
 from collections import namedtuple
 
 Pelicula = namedtuple('Pelicula', [
     "fecha_estreno",   # tipo date
     "titulo",          # tipo str
     "director",        # tipo str
-    "genero",          # tipo list[str]
+    "generos",          # tipo list[str]
     "duracion",        # tipo int
     "presupuesto",     # tipo int
     "recaudacion",     # tipo int
@@ -13,14 +14,21 @@ Pelicula = namedtuple('Pelicula', [
 ])
 
 def lee_peliculas(ruta_fichero: str) -> list[Pelicula]:    
-    with open(ruta_fichero, encoding='utf-8') as f:
+    with open(ruta_fichero, encoding='utf-8') as f: #con el with no es necesario cerrar el archivo
         lector = csv.reader(f)
         next(lector) # Saltamos la cabecera
-        for linea in lector:
-            # TODO: Depura para observar qué hay en linea
-            # TODO: Modifica el for para obtener cada campo en una variable mediante unpacking
-            # TODO: Crea una tupla de tipo Pelicula para cada iteración del bucle, rellenándola con los datos adecuados
-            pass
+        peliculas = []
+        for fecha_estreno,titulo,director,genero,duracion,presupuesto,recaudacion,reparto in lector:
+            fecha_estreno = date.fromisoformat(fecha_estreno)
+            generos = generos.split(",")
+            duracion = int(duracion)
+            presupuesto = int(presupuesto)
+            recaudacion = int(recaudacion)
+            reparto = reparto.split(",")
+            tupla=Pelicula(fecha_estreno,titulo,director,genero,duracion,presupuesto,recaudacion,reparto)
+            peliculas.append(tupla)
+    return peliculas     
+            
     
 
 def existe_pelicula(peliculas: list[Pelicula], cadena_en_titulo: str) -> bool:
@@ -33,8 +41,12 @@ def existe_pelicula(peliculas: list[Pelicula], cadena_en_titulo: str) -> bool:
     bool: True si existe al menos una película cuyo título contiene la cadena, False en caso
     contrario.
     """
-    # TODO: Implementa esta función
-    pass
+    existe = False
+    for p in peliculas:
+        if cadena_en_titulo in p.titulo:
+            existe = True
+            break
+    return existe 
 
 def son_todas_director_genero(peliculas: list[Pelicula], director: str, genero: str) -> bool:
     """
@@ -46,8 +58,13 @@ def son_todas_director_genero(peliculas: list[Pelicula], director: str, genero: 
     Devuelve:
     bool: True si todas las películas del director pertenecen al género, False en caso contrario.
     """
-    # TODO: Implementa esta función
-    pass
+    todas_genero = True
+    for p in peliculas:
+        if p.director == director:
+            if genero not in p.generos: 
+                todas_genero = False 
+                break
+    return todas_genero
 
 def construye_lista_titulos_actor(peliculas: list[Pelicula], actor: str) -> list[str]:
     """
@@ -58,8 +75,12 @@ def construye_lista_titulos_actor(peliculas: list[Pelicula], actor: str) -> list
     Devuelve:
     list[str]: Lista de títulos de películas en las que aparece el actor.
     """    
-    # TODO: Implementa esta función
-    pass
+    titulos = []
+    for p in peliculas:
+        if actor in p.reparto:
+            titulos.append(p.titulo)
+    return titulos 
+
 
 def calcula_presupuesto_total_año(peliculas: list[Pelicula], año: int) -> int:
     """
@@ -70,8 +91,11 @@ def calcula_presupuesto_total_año(peliculas: list[Pelicula], año: int) -> int:
     Devuelve:
     int: Presupuesto total de las películas estrenadas en el año indicado.
     """
-    # TODO: Implementa esta función
-    pass
+    total = 0
+    for p in peliculas:
+        if p.fecha_estreno.year == año:
+            total += p.presupuesto
+    return total 
 
 def encuentra_pelicula_mayor_recaudacion(peliculas: list[Pelicula], genero: str) -> Pelicula | None:
     """
@@ -82,11 +106,13 @@ def encuentra_pelicula_mayor_recaudacion(peliculas: list[Pelicula], genero: str)
     Devuelve:
     Pelicula | None: Película con mayor recaudación del género indicado, o None si no existe ninguna.
     """
-    # TODO: Implementa esta función
-    pass
-
-
-
+    
+    pelicula_mayor_recaudacion = None
+    for p in peliculas:
+        if genero in p.generos:
+            if  pelicula_mayor_recaudacion == None or p.recaudacion > pelicula_mayor_recaudacion: 
+                pelicula_mayor_recaudacion = p 
+    return pelicula_mayor_recaudacion 
 
 
 
